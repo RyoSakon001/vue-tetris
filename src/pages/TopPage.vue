@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { reactive } from 'vue'; // vue標準ライブラリからreactiveメソッドを使う
+import { useRouter } from 'vue-router';
+import PlayPageVue from '../../ubuntu-20.04/home/ryo/vue-applications/techpit-vue-tetris/src/pages/PlayPage.vue';
 
 const state = reactive({ name: ""}); // stateはreactiveな配列で初期値。変更されうる。
+const router = useRouter();
+
 const startGame = () => {
-    alert(`ユーザ名：${state.name}`); // inputの中身を挿入してアラートする「startGame」アロー関数を定義
+    // main.tsに記載された名称「PlayPage」に従ったリンク＝/play, queryはクエリパラメータ。
+    router.push({name: "PlayPage", query: {name: state.name }});
 }
 </script>
 
