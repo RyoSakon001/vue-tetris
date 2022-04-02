@@ -5,8 +5,13 @@ const field = new Array(row);
 const column = 10;
 for (let i = 0; i < row; i++) {
     const fieldColumn = new Array(column).fill(0);
-    field[i] = fieldColumn[i];
+    field[i] = fieldColumn;
 }
+
+field[0][0] = 1;
+field[1][0] = 1;
+field[2][0] = 1;
+field[3][0] = 1;
 
 const tetrominos = [
     [
@@ -52,9 +57,9 @@ const tetrominos = [
             <tr v-for="(row, y) in field" :key="y">
                 <td
                     class="block"
-                    v-for="(col, x) in column"
-                    :key="() => `${x}${y}`">
-                </td>
+                    v-for="(col, x) in row"
+                    :key="() => `${x}${y}`"
+                >{{ col }}</td>
             </tr>
         </table>
     </div>
