@@ -48,4 +48,26 @@ export class Field {
   
       return new Field(newFieldData);
     }
+
+    canMove = (data: number[][], position: {x: number, y: number}): boolean => {
+      const y_max = this.field.length;
+      const x_max = this.field[0].length;
+  
+      if (position.y >= y_max) return false;
+  
+      for (var i = 0; i < data.length; i++) {
+          const rows = data[i];
+          for (var j = 0; j < rows.length; j++) {
+              const block = rows[j];
+              if (block > 0) {
+                  if (i + position.y > y_max - 1 ||
+                      0 > j + position.x ||
+                      this.field[i + position.y][j + position.x] > 0) {
+                      return false;
+                  }
+              } 
+          }
+      }
+      return true;
+    }
   }
