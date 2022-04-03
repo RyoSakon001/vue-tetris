@@ -1,21 +1,44 @@
 <script setup lang="ts">
-const row = 20;
-const field = new Array(row);
+import { reactive } from "vue";
+import { Tetromino, TETROMINO_TYPE } from '../common/Tetromino';
+import { Field } from '../common/Field';
 
-const column = 10;
-for (let i = 0; i < row; i++) {
-    const fieldColumn = new Array(column).fill(0);
-    field[i] = fieldColumn;
+let staticField = new Field();
+const tetris = reactive({
+    field: new Field(),
+});
+const tetromino = reactive({
+    current: Tetromino.random(),
+    position: { x: 3, y: 0 },
+});
+
+const classBlockColor = (_x: number, _y: number): string => {
+    const type = tetris.field.data[_y][_x];
+    if (type > 0) {
+        return Tetromino.id(type as TETROMINO_TYPE);
+    }
+
+    const { x, y } = tetromino.position;
+    const { data } = tetromino.current;
+
+    if (y <= _y && _y < y + data.length) {
+        const cols = data[_y - y];
+        if (x <= _x && _x < x + cols.length) {
+            if (cols[_x - x] > 0) {
+                return Tetromino.id(cols[_x - x] as TETROMINO_TYPE);
+            }
+        }
+    }
+    return "";
 }
 
-const classBlockColor(x:number, y:number): string => {
+setInterval(() => {
+    tetris.field = Field.deepCopy(staticField);
 
-}
-
-field[0][0] = 1;
-field[1][0] = 1;
-field[2][0] = 1;
-field[3][0] = 1;
+    tetromino.position.y++;
+    tetris.field.update(tetromino.current.data, tetromino.position);
+}, 1 * 1000);
+tetris.field.update(tetromino.current.data, tetromino.position);
 
 </script>
 
@@ -25,12 +48,12 @@ field[3][0] = 1;
 
     <div class="container">
         <table class="field" style="border-collapse: collapse">
-            <tr v-for="(row, y) in field" :key="y">
+            <tr v-for="(row, y) in tetris.field.data" :key="y">
                 <td
                     class="block"
                     v-for="(col, x) in row"
                     :key="() => `${x}${y}`"
-                    v-bind:class="classBlockColor(x, y)"
+                    :class="classBlockColor(x, y)"
                 >
                 </td>
             </tr>
