@@ -58,6 +58,7 @@ const nextTetrisField = () => {
 
 const onKeyDown = (e: KeyboardEvent) => {
     switch (e.key) {
+        // ↓キー押下時
         case "Down":
         case "ArrowDown":
             if (canDropCurrentTetromino()) {
@@ -66,6 +67,37 @@ const onKeyDown = (e: KeyboardEvent) => {
             } else {
                 nextTetrisField();
             }
+        break;
+        // ↑キー押下時
+        case "Up":
+        case "ArrowUp":
+            while(canDropCurrentTetromino()) {
+                tetromino.position.y++;
+                resetDrop();
+            }
+        nextTetrisField();
+        break;
+        // ←キー押下時
+        case "Left":
+        case "ArrowLeft": {
+            const data = tetromino.current.data;
+            const { x, y } = tetromino.position;
+            const leftPosition = {x: x - 1, y};
+            if(tetris.field.canMove(data, leftPosition)) {
+                tetromino.position.x--;
+            }
+        }
+        break;
+        // →キー押下時
+        case "Right":
+        case "ArrowRight": {
+            const data = tetromino.current.data;
+            const { x, y } = tetromino.position;
+            const rightPosition = {x: x + 1, y};
+            if(tetris.field.canMove(data, rightPosition)) {
+                tetromino.position.x++;
+            }
+        }
         break;
     }
 }
