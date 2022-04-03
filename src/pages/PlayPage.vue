@@ -1,18 +1,26 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, onMounted, onBeforeUnmount } from "vue";
 import { Tetromino, TETROMINO_TYPE } from '../common/Tetromino';
 import { Field } from '../common/Field';
 import TetrominoPreviewComponent from '../components/TetrominoPreviewComponent.vue';
+import { breakStatement } from "@babel/types";
 
 let staticField = new Field();
+
 const tetris = reactive({
     field: new Field(),
 });
+
 const tetromino = reactive({
     current: Tetromino.random(),
     position: { x: 3, y: 0 },
+    rotate: 0,
     next: Tetromino.random(),
 });
+
+const currentTetrominoData = () => {
+    return Tetromino.rotate(tetromino.rotate, tetromino.current.data);
+}
 
 const classBlockColor = (_x: number, _y: number): string => {
     const type = tetris.field.data[_y][_x];
@@ -21,7 +29,7 @@ const classBlockColor = (_x: number, _y: number): string => {
     }
 
     const { x, y } = tetromino.position;
-    const { data } = tetromino.current;
+    const data = currentTetrominoData();
 
     if (y <= _y && _y < y + data.length) {
         const cols = data[_y - y];
@@ -38,12 +46,12 @@ const canDropCurrentTetromino = (): boolean => {
     const { x, y } = tetromino.position;
     const droppedPosition = {x, y: y + 1};
     
-    const data = tetromino.current.data;
+    const data = currentTetrominoData();
     return tetris.field.canMove(data, droppedPosition);
 }
 
 const nextTetrisField = () => {
-    const data = tetromino.current.data;
+    const data = currentTetrominoData();
     const position = tetromino.position;
     
     tetris.field.update(data, position);
@@ -53,19 +61,94 @@ const nextTetrisField = () => {
 
     tetromino.current = tetromino.next;
     tetromino.next = Tetromino.random();
+    tetromino.rotate = 0;
     tetromino.position = { x: 3, y: 0 };
 }
 
-setInterval(() => {
-    tetris.field = Field.deepCopy(staticField);
-
-    if (canDropCurrentTetromino()) {
-        tetromino.position.y++;
-    } else {
+const onKeyDown = (e: KeyboardEvent) => {
+    switch (e.key) {
+        // スペースキー押下時
+        case " ": {
+            const nextRotate = (tetromino.rotate + 1) % 4;
+            const data = Tetromino.rotate(nextRotate, tetromino.current.data);
+            if (tetris.field.canMove(data, tetromino.position)) {
+                tetromino.rotate = nextRotate;
+            }
+        }
+        break;
+        // ↓キー押下時
+        case "Down":
+        case "ArrowDown":
+            if (canDropCurrentTetromino()) {
+                tetromino.position.y++;
+                resetDrop();
+            } else {
+                nextTetrisField();
+            }
+        break;
+        // ↑キー押下時
+        case "Up":
+        case "ArrowUp":
+            while(canDropCurrentTetromino()) {
+                tetromino.position.y++;
+                resetDrop();
+            }
         nextTetrisField();
+        break;
+        // ←キー押下時
+        case "Left":
+        case "ArrowLeft": {
+            const data = currentTetrominoData();
+            const { x, y } = tetromino.position;
+            const leftPosition = {x: x - 1, y};
+            if(tetris.field.canMove(data, leftPosition)) {
+                tetromino.position.x--;
+            }
+        }
+        break;
+        // →キー押下時
+        case "Right":
+        case "ArrowRight": {
+            const data = currentTetrominoData();
+            const { x, y } = tetromino.position;
+            const rightPosition = {x: x + 1, y};
+            if(tetris.field.canMove(data, rightPosition)) {
+                tetromino.position.x++;
+            }
+        }
+        break;
     }
-}, 1 * 100);
-tetris.field.update(tetromino.current.data, tetromino.position);
+}
+
+// プレイ画面を表示している時、イベントリスナーを登録
+onMounted(function() {
+    document.addEventListener('keydown', onKeyDown);
+});
+
+// プレイ画面から離れた時、イベントリスナーを解除
+onBeforeUnmount(function() {
+    document.removeEventListener('keydown', onKeyDown);
+});
+
+const resetDropInterval = () => {
+    let intervalId = -1;
+
+    return () => {
+        if (intervalId !== -1) clearInterval(intervalId);
+        intervalId = setInterval(() => {
+            tetris.field = Field.deepCopy(staticField);
+
+            if (canDropCurrentTetromino()) {
+                tetromino.position.y++;
+            } else {
+                nextTetrisField();
+            }
+        }, 1 * 1000);
+    };
+};
+
+const resetDrop = resetDropInterval();
+resetDrop();
 
 </script>
 

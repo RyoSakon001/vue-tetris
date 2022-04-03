@@ -62,6 +62,7 @@ export class Field {
               if (block > 0) {
                   if (i + position.y > y_max - 1 ||
                       0 > j + position.x ||
+                      j + position.x > x_max - 1 ||
                       this.field[i + position.y][j + position.x] > 0) {
                       return false;
                   }
