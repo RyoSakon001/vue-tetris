@@ -13,6 +13,31 @@ field[1][0] = 1;
 field[2][0] = 1;
 field[3][0] = 1;
 
+const classBlockColor = (x: number, y: number): string => {
+    const type = field[y][x];
+    if (type > 0) {
+        switch (type) {
+            case 1:
+                return "block-i";
+            case 2:
+                return "block-o";
+            case 3:
+                return "block-s";
+            case 4:
+                return "block-z";
+            case 5:
+                return "block-j";
+            case 6:
+                return "block-l";
+            case 7:
+                return "block-t";
+            default:
+                return "";
+        }
+    }
+    return "";
+}
+
 const tetrominos = [
     [
         [0] //空白
@@ -59,13 +84,15 @@ const tetrominos = [
                     class="block"
                     v-for="(col, x) in row"
                     :key="() => `${x}${y}`"
-                >{{ col }}</td>
+                    v-bind:class="classBlockColor(x, y)"
+                >
+                </td>
             </tr>
         </table>
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .container {
 display: flex;
 justify-content: center;
@@ -81,5 +108,31 @@ border-top: none;
 width: 1em;
 height: 1em;
 border: 0.1px solid #95a5a6;
+
+/*
+各テトリミノに対応した色を扱うクラス定義
+.block-i, .block-o のようにクラスが定義される
+*/
+&-i {
+background: #3498db;
+}
+&-o {
+background: #f1c40f;
+}
+&-s {
+background: #2ecc71;
+}
+&-z {
+background: #e74c3c;
+}
+&-j {
+background: #1e3799;
+}
+&-l {
+background: #e67e22;
+}
+&-t {
+background: #9b59b6;
+}
 }
 </style>
