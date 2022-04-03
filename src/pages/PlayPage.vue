@@ -8,68 +8,14 @@ for (let i = 0; i < row; i++) {
     field[i] = fieldColumn;
 }
 
+const classBlockColor(x:number, y:number): string => {
+
+}
+
 field[0][0] = 1;
 field[1][0] = 1;
 field[2][0] = 1;
 field[3][0] = 1;
-
-const classBlockColor = (x: number, y: number): string => {
-    const type = field[y][x];
-    if (type > 0) {
-        switch (type) {
-            case 1:
-                return "block-i";
-            case 2:
-                return "block-o";
-            case 3:
-                return "block-s";
-            case 4:
-                return "block-z";
-            case 5:
-                return "block-j";
-            case 6:
-                return "block-l";
-            case 7:
-                return "block-t";
-            default:
-                return "";
-        }
-    }
-    return "";
-}
-
-const tetrominos = [
-    [
-        [0] //空白
-    ],
-    [
-        [1,1,1,1] //水色
-    ],
-    [
-        [2,2],
-        [2,2] //黄色
-    ],
-    [
-        [0,3,3],
-        [3,3,0] //緑
-    ],
-    [
-        [4,4,0],
-        [0,4,4] //赤
-    ],
-    [
-        [0,0,5],
-        [5,5,5] //青
-    ],
-    [
-        [6,0,0],
-        [6,6,6] //オレンジ
-    ],
-    [
-        [0,7,0],
-        [7,7,7] //紫
-    ],
-];
 
 </script>
 
