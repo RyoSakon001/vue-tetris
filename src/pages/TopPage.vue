@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive } from 'vue'; // vue標準ライブラリからreactiveメソッドを使う
 import { useRouter } from 'vue-router';
-import PlayPageVue from '../../ubuntu-20.04/home/ryo/vue-applications/techpit-vue-tetris/src/pages/PlayPage.vue';
+import PlayPageVue from './PlayPage.vue';
 
 const state = reactive({ name: ""}); // stateはreactiveな配列で初期値。変更されうる。
 const router = useRouter();
