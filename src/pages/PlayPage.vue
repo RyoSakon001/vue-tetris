@@ -1,22 +1,58 @@
 <script setup lang="ts">
-import { reactive, onMounted, onBeforeUnmount } from "vue";
+import { reactive, onBeforeUnmount, watch } from "vue";
 import { Tetromino, TETROMINO_TYPE } from '../common/Tetromino';
 import { Field } from '../common/Field';
 import TetrominoPreviewComponent from '../components/TetrominoPreviewComponent.vue';
 import { breakStatement } from "@babel/types";
 
+const PLAY_STATUS = {
+    GAMESTART: 1, // ゲームスタート
+    PLAYING: 2, // プレイ中
+    GAMEOVER: 3, // ゲームオーバー
+} as const;
+export type PLAY_STATUS = typeof PLAY_STATUS[keyof typeof PLAY_STATUS];
+
 let staticField = new Field();
+
+const gameStatus = reactive({ gameStatus: PLAY_STATUS.GAMESTART as PLAY_STATUS });
+const isStandby = () => gameStatus.gameStatus !== PLAY_STATUS.PLAYING;
+const gameStart = () => gameStatus.gameStatus = PLAY_STATUS.PLAYING;
 
 const tetris = reactive({
     field: new Field(),
     score: 0,
 });
 
+watch(gameStatus, (currentState) => {
+    switch(currentState.gameStatus as PLAY_STATUS) {
+        case PLAY_STATUS.GAMESTART:
+        break;
+        case PLAY_STATUS.PLAYING:
+        document.addEventListener('keydown', onKeyDown);
+
+        staticField = new Field();
+        tetris.field = new Field();
+
+        tetromino.current = Tetromino.random();
+        tetromino.next = Tetromino.random();
+
+        tetris.score = 0;
+        resetDrop();
+
+        break;
+        case PLAY_STATUS.GAMEOVER:
+        document.removeEventListener('keydown', onKeyDown);
+
+        tetromino.next = Tetromino.empty();
+        break;
+    }
+})
+
 const tetromino = reactive({
-    current: Tetromino.random(),
+    current: Tetromino.empty(),
     position: { x: 3, y: 0 },
     rotate: 0,
-    next: Tetromino.random(),
+    next: Tetromino.empty(),
 });
 
 const currentTetrominoData = () => {
@@ -66,6 +102,11 @@ const nextTetrisField = () => {
     tetromino.next = Tetromino.random();
     tetromino.rotate = 0;
     tetromino.position = { x: 3, y: 0 };
+
+    if(!canDropCurrentTetromino()) {
+        gameStatus.gameStatus = PLAY_STATUS.GAMEOVER as PLAY_STATUS;
+        resetDrop(true);
+    }
 }
 
 const onKeyDown = (e: KeyboardEvent) => {
@@ -140,11 +181,6 @@ const deleteLine = () => {
    return { score, field };
  };     
 
-// プレイ画面を表示している時、イベントリスナーを登録
-onMounted(function() {
-    document.addEventListener('keydown', onKeyDown);
-});
-
 // プレイ画面から離れた時、イベントリスナーを解除
 onBeforeUnmount(function() {
     document.removeEventListener('keydown', onKeyDown);
@@ -153,8 +189,9 @@ onBeforeUnmount(function() {
 const resetDropInterval = () => {
     let intervalId = -1;
 
-    return () => {
+    return (gameover: boolean = false) => {
         if (intervalId !== -1) clearInterval(intervalId);
+        if (gameover) return;
         intervalId = setInterval(() => {
             tetris.field = Field.deepCopy(staticField);
 
@@ -168,7 +205,6 @@ const resetDropInterval = () => {
 };
 
 const resetDrop = resetDropInterval();
-resetDrop();
 
 </script>
 
@@ -194,6 +230,7 @@ resetDrop();
             <TetrominoPreviewComponent v-bind:tetromino="tetromino.next.data"/>
             <ul class="data">
                 <li>スコア: {{ tetris.score }}</li>
+                <li><button v-if="isStandby()" @click.self.stop="gameStart">ゲームスタート</button></li>
             </ul>
         </div>
     </div>
@@ -201,58 +238,58 @@ resetDrop();
 
 <style lang="scss" scoped>
 .container {
-display: flex;
-justify-content: center;
-align-items: stretch;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
 }
 
 .field {
-border: ridge 0.4em #2c3e50;
-border-top: none; 
+    border: ridge 0.4em #2c3e50;
+    border-top: none; 
 }
 
 .block {
-width: 1em;
-height: 1em;
-border: 0.1px solid #95a5a6;
+    width: 1em;
+    height: 1em;
+    border: 0.1px solid #95a5a6;
+
+    /*
+    各テトリミノに対応した色を扱うクラス定義
+    .block-i, .block-o のようにクラスが定義される
+    */
+    &-i {
+    background: #3498db;
+    }
+    &-o {
+    background: #f1c40f;
+    }
+    &-s {
+    background: #2ecc71;
+    }
+    &-z {
+    background: #e74c3c;
+    }
+    &-j {
+    background: #1e3799;
+    }
+    &-l {
+    background: #e67e22;
+    }
+    &-t {
+    background: #9b59b6;
+    }
+}
 
 .information {
-position: relative;
-margin-left: 0.5em;
-
-  ul.data {
+    width: 180px;
+    position: relative;
+    margin-left: 0.5em;
+    ul.data {
     list-style: none;
     position: absolute;
     font-size: 1.3em;
     padding-left: 0;
     bottom: 0;
-  }
-}
-
-/*
-各テトリミノに対応した色を扱うクラス定義
-.block-i, .block-o のようにクラスが定義される
-*/
-&-i {
-background: #3498db;
-}
-&-o {
-background: #f1c40f;
-}
-&-s {
-background: #2ecc71;
-}
-&-z {
-background: #e74c3c;
-}
-&-j {
-background: #1e3799;
-}
-&-l {
-background: #e67e22;
-}
-&-t {
-background: #9b59b6;
-}
+    }
 }
 </style>
