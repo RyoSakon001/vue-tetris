@@ -209,7 +209,7 @@ const resetDrop = resetDropInterval();
 </script>
 
 <template>
-    <h1>Fun Vue-Tetris</h1>
+    <h1>Enjoy Vue-Tetris!!</h1>
     <h2>Goog Luck {{ $route.query.name }} !!</h2>
 
     <div class="container">
