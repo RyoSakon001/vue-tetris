@@ -286,17 +286,17 @@ const resetDrop = resetDropInterval();
         </div>
         <div class="information">
             <TetrominoPreviewComponent v-bind:tetromino="tetromino.next.data"/>
+            <div class="cross-layout" style="margin-top:1.0em;">
+                <button class="btn position-top" v-on:click="onCrossKey('Up')">↑</button>
+                <button class="btn position-left" v-on:click="onCrossKey('Left')">←</button>
+                <button class="btn position-right" v-on:click="onCrossKey('Right')">→</button>
+                <button class="btn position-bottom" v-on:click="onCrossKey('Down')">↓</button>
+                <button class="btn position-center" v-on:click="onCrossKey(' ')">〇</button>
+            </div>
             <ul class="data">
                 <li>Score: {{ tetris.score }}</li>
                 <li><button v-if="isStandby()" @click.self.stop="gameStart">START</button></li>
             </ul>
-        </div>
-        <div class="cross-layout">
-            <button class="btn position-top" v-on:click="onCrossKey('Up')">↑</button>
-            <button class="btn position-left" v-on:click="onCrossKey('Left')">←</button>
-            <button class="btn position-right" v-on:click="onCrossKey('Right')">→</button>
-            <button class="btn position-bottom" v-on:click="onCrossKey('Down')">↓</button>
-            <button class="btn position-center" v-on:click="onCrossKey(' ')">〇</button>
         </div>
     </div>
 </template>
