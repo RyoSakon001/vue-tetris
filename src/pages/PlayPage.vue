@@ -29,7 +29,6 @@ watch(gameStatus, (currentState) => {
         break;
         case PLAY_STATUS.PLAYING:
         document.addEventListener('keydown', onKeyDown);
-        document.addEventListener('keydown', onCrossKey);
 
         staticField = new Field();
         tetris.field = new Field();
@@ -43,7 +42,6 @@ watch(gameStatus, (currentState) => {
         break;
         case PLAY_STATUS.GAMEOVER:
         document.removeEventListener('keydown', onKeyDown);
-        document.removeEventListener('keydown', onCrossKey);
 
         tetromino.next = Tetromino.empty();
         break;
@@ -166,61 +164,6 @@ const onKeyDown = (e: KeyboardEvent) => {
     }
 }
 
-const onCrossKey = (Key) => {
-    switch (Key) {
-        // スペースキー押下時
-        case " ": {
-            const nextRotate = (tetromino.rotate + 1) % 4;
-            const data = Tetromino.rotate(nextRotate, tetromino.current.data);
-            if (tetris.field.canMove(data, tetromino.position)) {
-                tetromino.rotate = nextRotate;
-            }
-        }
-        break;
-        // ↓キー押下時
-        case "Down":
-        case "ArrowDown":
-            if (canDropCurrentTetromino()) {
-                tetromino.position.y++;
-                resetDrop();
-            } else {
-                nextTetrisField();
-            }
-        break;
-        // ↑キー押下時
-        case "Up":
-        case "ArrowUp":
-            while(canDropCurrentTetromino()) {
-                tetromino.position.y++;
-                resetDrop();
-            }
-        nextTetrisField();
-        break;
-        // ←キー押下時
-        case "Left":
-        case "ArrowLeft": {
-            const data = currentTetrominoData();
-            const { x, y } = tetromino.position;
-            const leftPosition = {x: x - 1, y};
-            if(tetris.field.canMove(data, leftPosition)) {
-                tetromino.position.x--;
-            }
-        }
-        break;
-        // →キー押下時
-        case "Right":
-        case "ArrowRight": {
-            const data = currentTetrominoData();
-            const { x, y } = tetromino.position;
-            const rightPosition = {x: x + 1, y};
-            if(tetris.field.canMove(data, rightPosition)) {
-                tetromino.position.x++;
-            }
-        }
-        break;
-    }
-}
-
 const deleteLine = () => {
    let score = 0;
    const field = tetris.field.data.filter((row) => {
@@ -241,7 +184,6 @@ const deleteLine = () => {
 // プレイ画面から離れた時、イベントリスナーを解除
 onBeforeUnmount(function() {
     document.removeEventListener('keydown', onKeyDown);
-    document.removeEventListener('keydown', onCrossKey);
 });
 
 const resetDropInterval = () => {
@@ -286,13 +228,6 @@ const resetDrop = resetDropInterval();
         </div>
         <div class="information">
             <TetrominoPreviewComponent v-bind:tetromino="tetromino.next.data"/>
-            <div class="cross-layout" style="margin-top:1.0em;">
-                <button class="btn position-top" v-on:click="onCrossKey('Up')">↑</button>
-                <button class="btn position-left" v-on:click="onCrossKey('Left')">←</button>
-                <button class="btn position-right" v-on:click="onCrossKey('Right')">→</button>
-                <button class="btn position-bottom" v-on:click="onCrossKey('Down')">↓</button>
-                <button class="btn position-center" v-on:click="onCrossKey(' ')">〇</button>
-            </div>
             <ul class="data">
                 <li>Score: {{ tetris.score }}</li>
                 <li><button v-if="isStandby()" @click.self.stop="gameStart">START</button></li>
@@ -357,36 +292,4 @@ const resetDrop = resetDropInterval();
     bottom: 0;
     }
 }
-
-.btn {
-    border-style: bold;
-    cursor: pointer;
-}
-.cross-layout {
-    display: grid;
-    grid-template-columns: 50px 50px 50px;
-    grid-template-rows: 50px 50px 50px;
-
-    .position-top {
-        grid-row: 1 / 2;
-        grid-column: 2 / 3;
-    }
-    .position-left {
-        grid-row: 2 / 3;
-        grid-column: 1 / 2;
-    }
-    .position-center {
-        grid-row: 2 / 3;
-        grid-column: 2 / 3;
-    }
-    .position-right {
-        grid-row: 2 / 3;
-        grid-column: 3 / 4;
-    }
-    .position-bottom {
-        grid-row: 3 / 4;
-        grid-column: 2 / 3;
-    }
-}
-
 </style>
