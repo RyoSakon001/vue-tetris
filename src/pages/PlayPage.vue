@@ -209,8 +209,8 @@ const resetDrop = resetDropInterval();
 </script>
 
 <template>
-    <h1>プレイ画面</h1>
-    <h2>プレーヤー名：{{ $route.query.name }}</h2>
+    <h1>Fun Vue-Tetris</h1>
+    <h2>Goog Luck {{ $route.query.name }} !!</h2>
 
     <div class="container">
         <div class="tetris">
@@ -229,8 +229,8 @@ const resetDrop = resetDropInterval();
         <div class="information">
             <TetrominoPreviewComponent v-bind:tetromino="tetromino.next.data"/>
             <ul class="data">
-                <li>スコア: {{ tetris.score }}</li>
-                <li><button v-if="isStandby()" @click.self.stop="gameStart">ゲームスタート</button></li>
+                <li>Score: {{ tetris.score }}</li>
+                <li><button v-if="isStandby()" @click.self.stop="gameStart">START</button></li>
             </ul>
         </div>
     </div>
