@@ -18,7 +18,7 @@ const classPreviewBlockColor = (type: number) => {
 
 <template>
     <div class="tetromino-preview">
-        <label>次のブロック</label>
+        <label>Next Block</label>
         <table class="field">
             <tr v-for="(row, y) in props.tetromino" :key="y">
                 <td
