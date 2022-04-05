@@ -13,18 +13,18 @@ const startGame = () => {
 </script>
 
 <template>
-    <h1>トップ画面</h1>
+    <h1>Welcome to Vue-Tetris!!</h1>
     <!-- reactiveな変数 -->
     <p>{{ state.name }}</p>
     <input
         v-model="state.name"
-        placeholder="名前を入力してください(10文字以内)"
+        placeholder="Press Your Name"
         maxlength="10"
     ><br><br>
     <!-- v-on→押下したらstartGameメソッドを実行 -->
     <!-- v-onは@でもよい -->
     <button v-on:click="startGame()"> 
-        ゲームスタート！
+        GAME START
     </button>
 </template>
 
