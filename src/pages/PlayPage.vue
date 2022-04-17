@@ -6,9 +6,9 @@ import TetrominoPreviewComponent from '../components/TetrominoPreviewComponent.v
 import { breakStatement } from "@babel/types";
 
 const PLAY_STATUS = {
-    GAMESTART: 1, // ゲームスタート
-    PLAYING: 2, // プレイ中
-    GAMEOVER: 3, // ゲームオーバー
+    GAMESTART: 1,
+    PLAYING: 2,
+    GAMEOVER: 3,
 } as const;
 export type PLAY_STATUS = typeof PLAY_STATUS[keyof typeof PLAY_STATUS];
 
